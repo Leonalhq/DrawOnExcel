@@ -20,7 +20,7 @@ def getPixelsFromImage(image):
 def writePixelsIntoExcel(pixels):
     workbook = xlwt.Workbook(style_compression=2)  
     sheet = workbook.add_sheet('PixelImage')
-    workbook.save(sys.argv[1] + ".xls")
+    workbook.save("./Output" + sys.argv[1] + ".xls")
 
     for row in range(0, len(pixels)):
         for column in range(0, len(pixels[0])):
@@ -31,7 +31,7 @@ def writePixelsIntoExcel(pixels):
             workbook.set_colour_RGB(colorName, color[0], color[1], color[2])
             style = xlwt.easyxf('pattern: pattern solid, fore_colour ' + str(colorName))
             sheet.write(row, column, "", style)
-    workbook.save(sys.argv[1] + ".xls")
+    workbook.save("Output/" + sys.argv[1] + ".xls")
 
 
 #xlwt only support 56 colors
@@ -46,7 +46,7 @@ def matchSimilarColor(rgb):
 
 
 def main():
-    pixels = getPixelsFromImage(Image.open(sys.argv[1]))
+    pixels = getPixelsFromImage(Image.open("./Input/" + sys.argv[1]))
     writePixelsIntoExcel(pixels)
 
 
