@@ -4,6 +4,7 @@ import time
 import sys
 import xlwt
 import xlrd
+import math
 
 
 def getPixelsFromImage(image):
@@ -19,23 +20,29 @@ def getPixelsFromImage(image):
 def writePixelsIntoExcel(pixels):
     workbook = xlwt.Workbook(style_compression=2)  
     sheet = workbook.add_sheet('PixelImage')
-    workbook.save("PixelImage.xls")
+    workbook.save(sys.argv[1] + ".xls")
 
     for row in range(0, len(pixels)):
-        for column in range(0, len(pixels)):
+        for column in range(0, len(pixels[0])):
             (r, g, b) = pixels[row][column]
             print("draw on cell:(" + str(row) + "," + str(column) + ") RGB:(" + str(r) + "," + str(g) + "," + str(b) + ")")
-#            workbook = xlrd.open_workbook("PixelImage.xls")
-#            workbook = copy(workbook)
-#            sheet = workbook.get_sheet(0)
-            cellName = str(row) + "*" + str(column)
-            print(cellName)
-            xlwt.add_palette_colour(cellName, (row * 2 + column) % 52 + 8) 
-            workbook.set_colour_RGB((row * 2 + column) % 52 + 8, r, g, b)
-            style = xlwt.easyxf('pattern: pattern solid, fore_colour ' + cellName)
+            (colorName, color) = matchSimilarColor((r, g, b))
+            xlwt.add_palette_colour(str(colorName), colorName) 
+            workbook.set_colour_RGB(colorName, color[0], color[1], color[2])
+            style = xlwt.easyxf('pattern: pattern solid, fore_colour ' + str(colorName))
             sheet.write(row, column, "", style)
-    workbook.save("PixelImage.xls")
-    
+    workbook.save(sys.argv[1] + ".xls")
+
+
+#xlwt only support 56 colors
+def matchSimilarColor(rgb):
+    (r, g, b) = rgb
+    colorNum = 0
+    color = [] 
+    for i in range(0, len(rgb)):
+        color.append(rgb[i] / 86 * 85 + 43)
+        colorNum = int(colorNum + rgb[i] / 86 * math.pow(3, i) + 8)
+    return (colorNum, color)
 
 
 def main():
